@@ -1,14 +1,15 @@
 package org.sopt.seminar1;
 
-import javax.swing.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DiaryService {
     private final DiaryRepository diaryRepository = new DiaryRepository();
 
+    private final AtomicLong numbering = new AtomicLong();
+
     void postDiary(final String body) {
-        Diary newDiary = new Diary(null, body);
-        diaryRepository.save(newDiary);
+        diaryRepository.save(body);
     }
 
     List<Diary> getAllDiary() {
