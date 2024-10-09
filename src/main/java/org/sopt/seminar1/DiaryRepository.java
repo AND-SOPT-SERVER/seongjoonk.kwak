@@ -23,7 +23,7 @@ public class DiaryRepository {
     void save(final String body) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DIARY_DB, true))) { //true : append시킴
             maxId ++;
-            Diary newDiary = new Diary(maxId, body);
+            Diary newDiary = new Diary(maxId, body, false);
             writer.write(newDiary.getId() + ":" + newDiary.getBody() + ":" + newDiary.isDeleted() + "\n");
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -43,9 +43,11 @@ public class DiaryRepository {
                     String body = parts[1].trim();  // 일기 내용
                     boolean isDeleted = Boolean.parseBoolean(parts[2].trim());
 
-                    //삭제되지 않은 일기들만 보이게
-                    if (!isDeleted) {
-                        Diary diary = new Diary(id, body);
+                    if (isDeleted) {
+                        Diary diary = new Diary(id, "삭제된 일기", true);
+                        diaryList.add(diary);
+                    } else {
+                        Diary diary = new Diary(id, body, isDeleted);
                         diaryList.add(diary);
                     }
                 }
@@ -56,30 +58,32 @@ public class DiaryRepository {
         return diaryList;
     }
 
-    void delete(Long diaryId) {
-        List<Diary> existingDiaries = getAllDiary();
+    //일기 삭제(soft delete)
+    void delete(final Long diaryId) {
+        List<Diary> diaryList = getAllDiary();
 
-        //고민지점
-        //1. 여기서 stream을 사용할 때, map과 toList로 새로운 List를 만드냐
-        //2. 여기서 filter와 forEach를 사용해서 existingDiaries를 그냥 바꾸냐
-        //현재 제 생각은 그래도 변수명에 의미를 좀 더 두어서, map과 toList를 이용해서 newDiaryList를 만들기로 생각
-        List<Diary> newDiaryList = existingDiaries
-                .stream()
-                .map(diary -> {
-                    if(diary.getId().equals(diaryId)) {
-                        diary.setDeleted(true);
-                    }
-                    return diary;
-                }).toList();
-//                .filter(diary -> diaryId.equals(diary.getId()))
-//                .forEach(diary -> diary.setDeleted(true));
+        diaryList.stream()
+                .filter(diary -> diaryId.equals(diary.getId()))
+                .forEach(diary -> diary.setDeleted(true));
 
-        saveAllDiary(newDiaryList);
+        saveAllDiary(diaryList);
+    }
+
+    //일기 수정
+    void patch(final Long diaryId, final String newBody) {
+        List<Diary> diaryList = getAllDiary();
+
+        diaryList.stream()
+                .filter(diary -> diaryId.equals(diary.getId()))
+                .forEach(diary -> diary.setBody(newBody));
+        saveAllDiary(diaryList);
     }
 
     // 수정 or 삭제 시, 새로 파일 덮어쓰기
-    void saveAllDiary(List<Diary> diaryList) {
+    void saveAllDiary(final List<Diary> diaryList) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DIARY_DB, false))) {  // false: 덮어쓰기 모드
+            //foreach를 쓰면 람다 표현식 내부에서 예외가 발생했을 경우, java는 람다 안에서 예외 처리를 할 수 없음
+            //forEach를 쓰면 try-catch문을 안에 한번 더 적어야됨
             for (Diary diary : diaryList) {
                 writer.write(diary.getId() + ":" + diary.getBody() + ":" + diary.isDeleted() + "\n");
             }

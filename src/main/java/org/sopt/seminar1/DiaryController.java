@@ -31,12 +31,13 @@ public class DiaryController {
     final void delete(final String id) {
 
         // String으로 들어온 id 검증
-        Long diaryId = Validator.validateId(id);
+        final Long diaryId = validateId(id);
         diaryService.deleteDiary(diaryId);
     }
 
     final void patch(final String id, final String body) {
-
+        final Long diaryId = validateId(id);
+        diaryService.patchDiary(diaryId, body);
     }
 
     enum Status {
@@ -44,5 +45,9 @@ public class DiaryController {
         RUNNING,
         FINISHED,
         ERROR,
+    }
+
+    private Long validateId(final String id) {
+        return Validator.validateId(id);
     }
 }
