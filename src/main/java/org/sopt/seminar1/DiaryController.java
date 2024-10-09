@@ -25,7 +25,11 @@ public class DiaryController {
     }
 
     final void post(final String body) {
-        diaryService.postDiary(body);
+
+        //글자수 검증
+        if (Validator.validateDiaryBodyLength(body)) {
+            diaryService.postDiary(body);
+        }
     }
 
     final void delete(final String id) {
@@ -35,13 +39,16 @@ public class DiaryController {
         if (diaryId == null) {
             return;
         }
-
         diaryService.deleteDiary(diaryId);
     }
 
     final void patch(final String id, final String body) {
         final Long diaryId = validateId(id);
-        diaryService.patchDiary(diaryId, body);
+
+        //글자수 검증
+        if (Validator.validateDiaryBodyLength(body)) {
+            diaryService.patchDiary(diaryId, body);
+        }
     }
 
     final void restore(final String id) {

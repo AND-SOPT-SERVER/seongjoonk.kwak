@@ -17,4 +17,13 @@ public class Validator {
             return null;
         }
     }
+
+    public static boolean validateDiaryBodyLength(final String body) {
+        if (body.length() > 30) {
+            System.out.println("일기의 글자수가 30자를 넘으면 안됩니다.");
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
