@@ -44,6 +44,11 @@ public class DiaryController {
         diaryService.patchDiary(diaryId, body);
     }
 
+    final void restore(final String id) {
+        final Long diaryId = validateId(id);
+        diaryService.restore(diaryId);
+    }
+
     enum Status {
         READY,
         RUNNING,

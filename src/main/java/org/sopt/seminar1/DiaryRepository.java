@@ -81,6 +81,23 @@ public class DiaryRepository {
         saveAllDiary(diaryList);
     }
 
+    //삭제된 일기 복구 메서드
+    void restore(final Long diaryId) {
+        List<Diary> diaryList = getAllDiary();
+
+        diaryList.stream()
+                .filter(diary -> diaryId.equals(diary.getId()))
+                .forEach(diary -> {
+                    if(diary.isDeleted()) {
+                        diary.setDeleted(false);
+                        System.out.println(diary.getId() + "번" + " 일기가 복구되었습니다.");
+                    } else {
+                        System.out.println("삭제되지 않은 일기입니다.");
+                    }
+                });
+        saveAllDiary(diaryList);
+    }
+
     // 수정 or 삭제 시, 새로 파일 덮어쓰기
     void saveAllDiary(final List<Diary> diaryList) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DIARY_DB, false))) {  // false: 덮어쓰기 모드
