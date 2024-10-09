@@ -19,6 +19,10 @@ public class Diary {
         return body;
     }
 
+    public void setBody(final String newBody) {
+        this.body = newBody;
+    }
+
     public boolean isDeleted() {
         return isDeleted;
     }

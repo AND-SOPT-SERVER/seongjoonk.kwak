@@ -71,7 +71,13 @@ public class DiaryRepository {
 
         diaryList.stream()
                 .filter(diary -> diaryId.equals(diary.getId()))
-                .forEach(diary -> diary.setBody(newBody));
+                .forEach(diary -> {
+                    if (diary.isDeleted()) {
+                        System.out.println("삭제된 일기는 수정할 수 없습니다.");
+                    } else {
+                        diary.setBody(newBody);
+                    }
+                });
         saveAllDiary(diaryList);
     }
 
