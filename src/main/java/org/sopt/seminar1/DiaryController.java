@@ -32,6 +32,10 @@ public class DiaryController {
 
         // String으로 들어온 id 검증
         final Long diaryId = validateId(id);
+        if (diaryId == null) {
+            return;
+        }
+
         diaryService.deleteDiary(diaryId);
     }
 
@@ -48,6 +52,6 @@ public class DiaryController {
     }
 
     private Long validateId(final String id) {
-        return Validator.validateId(id);
+            return Validator.validateId(id);
     }
 }

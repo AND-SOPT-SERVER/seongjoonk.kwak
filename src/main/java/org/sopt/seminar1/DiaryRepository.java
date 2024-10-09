@@ -43,17 +43,13 @@ public class DiaryRepository {
                     String body = parts[1].trim();  // 일기 내용
                     boolean isDeleted = Boolean.parseBoolean(parts[2].trim());
 
-                    if (isDeleted) {
-                        Diary diary = new Diary(id, "삭제된 일기", true);
-                        diaryList.add(diary);
-                    } else {
-                        Diary diary = new Diary(id, body, isDeleted);
-                        diaryList.add(diary);
-                    }
+                    Diary diary = new Diary(id, body, isDeleted);
+                    diaryList.add(diary);
+
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         return diaryList;
     }

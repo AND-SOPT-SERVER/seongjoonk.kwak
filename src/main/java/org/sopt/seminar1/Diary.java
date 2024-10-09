@@ -2,12 +2,13 @@ package org.sopt.seminar1;
 
 public class Diary {
     private Long id;
-    private final String body;
-    private boolean isDeleted = false;
+    private String body;
+    private boolean isDeleted;
 
-    public Diary(final Long id, final String body) {
+    public Diary(final Long id, final String body, final boolean isDeleted) {
         this.id = id;
         this.body = body;
+        this.isDeleted = isDeleted;
     }
 
     public Long getId() {

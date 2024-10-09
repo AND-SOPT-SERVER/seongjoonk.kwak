@@ -11,7 +11,11 @@ public class DiaryService {
     }
 
     List<Diary> getAllDiary() {
-        return diaryRepository.getAllDiary();
+        List<Diary> diaryList = diaryRepository.getAllDiary();
+        diaryList.stream()
+                .filter(Diary::isDeleted)
+                .forEach(diary -> diary.setBody("삭제된 일기입니다."));
+        return diaryList;
     }
 
     void deleteDiary(final Long id) {
