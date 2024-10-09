@@ -30,6 +30,9 @@ public class DiaryController {
 
     final void delete(final String id) {
 
+        // String으로 들어온 id 검증
+        Long diaryId = Validator.validateId(id);
+        diaryService.deleteDiary(diaryId);
     }
 
     final void patch(final String id, final String body) {
