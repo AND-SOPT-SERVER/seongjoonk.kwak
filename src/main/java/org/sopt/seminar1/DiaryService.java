@@ -17,7 +17,7 @@ public class DiaryService {
 
         // 프로그램 시작 시, 파일에서 읽어와 저장
         storage.addAll(diaryRepository.getAllDiaryFromFile());
-        patchData = patchInfoRepository.loadEditInfo();
+        patchData = patchInfoRepository.loadPatchInfo();
     }
 
     void postDiary(final String body) {
@@ -56,6 +56,7 @@ public class DiaryService {
 
             // 고민 지점 : 이것도 검증(Validator)에 넣어야되나?
             if (!diaryToPatch.isDeleted() && canEdit(now, patchData)) {
+
                 //수정된 일기 저장
                 diaryToPatch.setBody(body);
                 overWriteDiaryToFile(storage);
@@ -63,7 +64,7 @@ public class DiaryService {
                 //patch정보 파일에 저장
                 patchData.setPatchCount(patchData.getPatchCount() + 1);
                 patchData.setLastPatchTime(now);
-                patchInfoRepository.saveEditInfo(patchData);
+                patchInfoRepository.savePatchInfo(patchData);
             } else if (diaryToPatch.isDeleted()) {
                  System.out.println("삭제된 일기는 수정할 수 없습니다.");
             } else {
@@ -77,6 +78,7 @@ public class DiaryService {
     void restore(final Long id) {
         Diary diaryToRestore = findDiaryById(id);
         if (!isDiaryNull(diaryToRestore)) {
+
             if (diaryToRestore.isDeleted()) {
                 diaryToRestore.setDeleted(false);
                 overWriteDiaryToFile(storage);
@@ -91,8 +93,9 @@ public class DiaryService {
 
     // 수정 가능 여부 확인
     private boolean canEdit(final LocalDateTime now, final PatchInfo patchData) {
+        //새로운 날짜이면 수정 횟수 초기화
         if (patchData.getLastPatchTime() == null || patchData.getLastPatchTime().toLocalDate().isBefore(now.toLocalDate())) {
-            patchData.setPatchCount(0); // 새로운 날이면 수정 횟수 초기화
+            patchData.setPatchCount(0);
             return true;
         }
         return patchData.getPatchCount() < 2; // 하루에 두 번 수정 가능
