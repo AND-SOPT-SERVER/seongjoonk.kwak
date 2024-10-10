@@ -1,6 +1,5 @@
 package org.sopt.seminar1;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DiaryController {
@@ -19,41 +18,39 @@ public class DiaryController {
         this.status = Status.FINISHED;
     }
 
-    // APIS
     final List<Diary> getList() {
         return diaryService.getAllDiary();
     }
 
     final void post(final String body) {
-
-        //글자수 검증
+        // 글자수 검증
         if (Validator.validateDiaryBodyLength(body)) {
             diaryService.postDiary(body);
         }
     }
 
     final void delete(final String id) {
-
         // String으로 들어온 id 검증
-        final Long diaryId = validateId(id);
-        if (diaryId == null) {
-            return;
+        final Long diaryId = validateIdAndChangeToLong(id);
+        if(diaryId != null) {
+            diaryService.deleteDiary(diaryId);
         }
-        diaryService.deleteDiary(diaryId);
     }
 
     final void patch(final String id, final String body) {
-        final Long diaryId = validateId(id);
+        final Long diaryId = validateIdAndChangeToLong(id);
 
-        //글자수 검증
-        if (Validator.validateDiaryBodyLength(body)) {
+        // 글자수 검증
+        if (diaryId != null && Validator.validateDiaryBodyLength(body)) {
             diaryService.patchDiary(diaryId, body);
         }
     }
 
     final void restore(final String id) {
-        final Long diaryId = validateId(id);
-        diaryService.restore(diaryId);
+        final Long diaryId = validateIdAndChangeToLong(id);
+        if (diaryId != null) {
+            diaryService.restore(diaryId);
+        }
     }
 
     enum Status {
@@ -63,7 +60,12 @@ public class DiaryController {
         ERROR,
     }
 
-    private Long validateId(final String id) {
-            return Validator.validateId(id);
+    private Long validateIdAndChangeToLong(final String id) {
+        if(Validator.validateId(id) == null) {
+            System.out.println("잘못된 ID입니다.");
+            return null;
+        } else {
+        return Validator.validateId(id);
+        }
     }
 }

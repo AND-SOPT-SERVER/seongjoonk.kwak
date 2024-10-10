@@ -23,11 +23,9 @@ public class Validator {
             if (id > 0) {  // ID는 0보다 큰 값이어야 함
                 return id;
             } else {
-                System.out.println("ID는 0보다 커야 합니다.");
                 return null;
             }
         } catch (NumberFormatException e) {
-            System.out.println("ID는 숫자여야 합니다.");
             return null;
         }
     }
@@ -35,7 +33,6 @@ public class Validator {
     //글자수 검증
     public static boolean validateDiaryBodyLength(final String body) {
         int actualLength = getLengthOfEmojiContainableText(body); // 실제 글자 수를 계산
-        System.out.println(actualLength);
         if (actualLength > MAX_DIARY_BODY_COUNT) {
             System.out.println("일기의 글자수가 30자를 넘으면 안됩니다.");
             return false;
