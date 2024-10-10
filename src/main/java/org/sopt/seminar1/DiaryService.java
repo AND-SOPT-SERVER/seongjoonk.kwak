@@ -16,7 +16,7 @@ public class DiaryService {
         long newId = storage.stream().mapToLong(Diary::getId).max().orElse(0) + 1;
         Diary newDiary = new Diary(newId, body, false);
         storage.add(newDiary);
-        diaryRepository.saveAllDiaryToFile(storage); // 파일에 저장
+        diaryRepository.save(newDiary); // 파일에 저장
     }
 
     List<Diary> getAllDiary() {
@@ -34,7 +34,7 @@ public class DiaryService {
         Diary diaryToDelete = findDiaryById(id);
         if (diaryToDelete != null) {
             diaryToDelete.setDeleted(true);
-            diaryRepository.saveAllDiaryToFile(storage); // 파일에 저장
+            diaryRepository.saveOverwriteAllDiaryToFile(storage); // 파일에 저장
         } else {
             System.out.println("해당 ID의 일기를 찾을 수 없습니다.");
         }
@@ -45,7 +45,7 @@ public class DiaryService {
         if (diaryToPatch != null) {
             if (!diaryToPatch.isDeleted()) {
                 diaryToPatch.setBody(body);
-                diaryRepository.saveAllDiaryToFile(storage); // 파일에 저장
+                diaryRepository.saveOverwriteAllDiaryToFile(storage); // 파일에 저장
             } else {
                 System.out.println("삭제된 일기는 수정할 수 없습니다.");
             }
@@ -59,7 +59,7 @@ public class DiaryService {
         if (diaryToRestore != null) {
             if (diaryToRestore.isDeleted()) {
                 diaryToRestore.setDeleted(false);
-                diaryRepository.saveAllDiaryToFile(storage); // 파일에 저장
+                diaryRepository.saveOverwriteAllDiaryToFile(storage); // 파일에 저장
                 System.out.println(diaryToRestore.getId() + "번 일기가 복구되었습니다.");
             } else {
                 System.out.println("삭제되지 않은 일기입니다.");

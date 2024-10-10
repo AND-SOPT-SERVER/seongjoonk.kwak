@@ -30,12 +30,21 @@ public class DiaryRepository {
         return diaryList;
     }
 
-    // 새로운 일기 저장 (파일에 저장)
-    void saveAllDiaryToFile(final List<Diary> diaryList) {
+    // 새로운 일기 저장 (일기 삭제 or 수정했을 때 덮어쓰기)
+    void saveOverwriteAllDiaryToFile(final List<Diary> diaryList) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DIARY_DB, false))) {  // false: 덮어쓰기 모드
             for (Diary diary : diaryList) {
                 writer.write(diary.getId() + ":" + diary.getBody() + ":" + diary.isDeleted() + "\n");
             }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    //새로운 일기 저장(일기 post할 때 append)
+    void save(final Diary diary) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DIARY_DB, true))) { //true : append시킴
+            writer.write(diary.getId() + ":" + diary.getBody() + ":" + diary.isDeleted() + "\n");
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
