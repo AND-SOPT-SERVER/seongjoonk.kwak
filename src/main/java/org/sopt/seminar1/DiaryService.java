@@ -11,25 +11,28 @@ public class DiaryService {
     private final PatchInfo patchData;
 
     public DiaryService() {
-        // 프로그램 시작 시, 파일에서 읽어와 storage에 저장
+
         diaryRepository = new DiaryRepository();
         patchInfoRepository = new PatchInfoRepository();
+
+        // 프로그램 시작 시, 파일에서 읽어와 저장
         storage.addAll(diaryRepository.getAllDiaryFromFile());
         patchData = patchInfoRepository.loadEditInfo();
     }
 
     void postDiary(final String body) {
-        long newId = storage.stream().mapToLong(Diary::getId).max().orElse(0) + 1;
+        final long newId = storage.stream().mapToLong(Diary::getId).max().orElse(0) + 1;
         Diary newDiary = new Diary(newId, body, false);
         storage.add(newDiary);
         diaryRepository.save(newDiary); // 파일에 저장
     }
 
+    //삭제된 일기일 경우, body의 출력값을 삭제된 일기로 보이게함(실제 DB는 원래 값)
     List<Diary> getAllDiary() {
         return storage.stream()
                 .map(diary -> {
                     if(diary.isDeleted()) {
-                        return new Diary(diary.getId(), "삭제일기입니다.", true);
+                        return new Diary(diary.getId(), "삭제된 일기입니다.", true);
                     }
                     return new Diary(diary.getId(), diary.getBody(), diary.isDeleted());
                 })
@@ -38,30 +41,31 @@ public class DiaryService {
 
     void deleteDiary(final Long id) {
         Diary diaryToDelete = findDiaryById(id);
-        if (diaryToDelete != null) {
+        if (!isDiaryNull(diaryToDelete)) {
             diaryToDelete.setDeleted(true);
-            diaryRepository.saveOverwriteAllDiaryToFile(storage); // 파일에 저장
+            overWriteDiaryToFile(storage);
         } else {
             System.out.println("해당 ID의 일기를 찾을 수 없습니다.");
         }
     }
 
     void patchDiary(final Long id, final String body) {
-        Diary PatchedDiary = findDiaryById(id);
-        if (PatchedDiary != null) {
+        Diary diaryToPatch = findDiaryById(id);
+        if (!isDiaryNull(diaryToPatch)) {
             final LocalDateTime now = LocalDateTime.now();
 
-            if (!PatchedDiary.isDeleted() && canEdit(now, patchData)) {
+            // 고민 지점 : 이것도 검증(Validator)에 넣어야되나?
+            if (!diaryToPatch.isDeleted() && canEdit(now, patchData)) {
                 //수정된 일기 저장
-                PatchedDiary.setBody(body);
-                diaryRepository.saveOverwriteAllDiaryToFile(storage);
+                diaryToPatch.setBody(body);
+                overWriteDiaryToFile(storage);
 
-                //수정정보 저장
+                //patch정보 파일에 저장
                 patchData.setPatchCount(patchData.getPatchCount() + 1);
                 patchData.setLastPatchTime(now);
                 patchInfoRepository.saveEditInfo(patchData);
-            } else if (PatchedDiary.isDeleted()) {
-                System.out.println("삭제된 일기는 수정할 수 없습니다.");
+            } else if (diaryToPatch.isDeleted()) {
+                 System.out.println("삭제된 일기는 수정할 수 없습니다.");
             } else {
                 System.out.println("하루에 두 번만 수정할 수 있습니다.");
             }
@@ -72,10 +76,10 @@ public class DiaryService {
 
     void restore(final Long id) {
         Diary diaryToRestore = findDiaryById(id);
-        if (diaryToRestore != null) {
+        if (!isDiaryNull(diaryToRestore)) {
             if (diaryToRestore.isDeleted()) {
                 diaryToRestore.setDeleted(false);
-                diaryRepository.saveOverwriteAllDiaryToFile(storage); // 파일에 저장
+                overWriteDiaryToFile(storage);
                 System.out.println(diaryToRestore.getId() + "번 일기가 복구되었습니다.");
             } else {
                 System.out.println("삭제되지 않은 일기입니다.");
@@ -100,5 +104,13 @@ public class DiaryService {
                 .filter(diary -> diary.getId().equals(id))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private boolean isDiaryNull(final Diary diary) {
+        return diary == null;
+    }
+
+    private void overWriteDiaryToFile(final List<Diary> diaryList) {
+        diaryRepository.saveOverwriteAllDiaryToFile(diaryList);
     }
 }
