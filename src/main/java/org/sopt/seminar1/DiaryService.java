@@ -1,22 +1,21 @@
 package org.sopt.seminar1;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DiaryService {
-    private final DiaryRepository diaryRepository = new DiaryRepository();
+    private final DiaryRepository diaryRepository;
+    private final PatchInfoRepository patchInfoRepository;
     private final List<Diary> storage = new ArrayList<>(); // 메모리 저장소
-    private int editCount; // 수정 횟수
-    private LocalDateTime lastEditTime; // 마지막 수정 시간
+    private final PatchInfo patchData;
 
     public DiaryService() {
         // 프로그램 시작 시, 파일에서 읽어와 storage에 저장
+        diaryRepository = new DiaryRepository();
+        patchInfoRepository = new PatchInfoRepository();
         storage.addAll(diaryRepository.getAllDiaryFromFile());
-        int[] editInfo = diaryRepository.loadEditInfo();
-        this.editCount = editInfo[0];
-        this.lastEditTime = LocalDateTime.now(); // 현재 시간으로 초기화
+        patchData = patchInfoRepository.loadEditInfo();
     }
 
     void postDiary(final String body) {
@@ -48,16 +47,20 @@ public class DiaryService {
     }
 
     void patchDiary(final Long id, final String body) {
-        Diary diaryToPatch = findDiaryById(id);
-        if (diaryToPatch != null) {
-            LocalDateTime now = LocalDateTime.now();
-            if (!diaryToPatch.isDeleted() && canEdit(now)) {
-                diaryToPatch.setBody(body);
-                diaryRepository.saveOverwriteAllDiaryToFile(storage); // 파일에 저장
-                editCount++;
-                lastEditTime = now;
-                diaryRepository.saveEditInfo(editCount, lastEditTime.format(DateTimeFormatter.ISO_DATE_TIME)); // 수정 정보 저장
-            } else if (diaryToPatch.isDeleted()) {
+        Diary PatchedDiary = findDiaryById(id);
+        if (PatchedDiary != null) {
+            final LocalDateTime now = LocalDateTime.now();
+
+            if (!PatchedDiary.isDeleted() && canEdit(now, patchData)) {
+                //수정된 일기 저장
+                PatchedDiary.setBody(body);
+                diaryRepository.saveOverwriteAllDiaryToFile(storage);
+
+                //수정정보 저장
+                patchData.setPatchCount(patchData.getPatchCount() + 1);
+                patchData.setLastPatchTime(now);
+                patchInfoRepository.saveEditInfo(patchData);
+            } else if (PatchedDiary.isDeleted()) {
                 System.out.println("삭제된 일기는 수정할 수 없습니다.");
             } else {
                 System.out.println("하루에 두 번만 수정할 수 있습니다.");
@@ -83,12 +86,12 @@ public class DiaryService {
     }
 
     // 수정 가능 여부 확인
-    private boolean canEdit(LocalDateTime now) {
-        if (lastEditTime == null || lastEditTime.toLocalDate().isBefore(now.toLocalDate())) {
-            editCount = 0; // 새로운 날이면 수정 횟수 초기화
+    private boolean canEdit(final LocalDateTime now, final PatchInfo patchData) {
+        if (patchData.getLastPatchTime() == null || patchData.getLastPatchTime().toLocalDate().isBefore(now.toLocalDate())) {
+            patchData.setPatchCount(0); // 새로운 날이면 수정 횟수 초기화
             return true;
         }
-        return editCount < 2; // 하루에 두 번 수정 가능
+        return patchData.getPatchCount() < 2; // 하루에 두 번 수정 가능
     }
 
     // ID로 일기를 찾는 메서드
