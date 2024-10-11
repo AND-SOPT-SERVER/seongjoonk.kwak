@@ -10,7 +10,7 @@ public class DiaryRepository {
     // 모든 일기 불러오기
     List<Diary> getAllDiaryFromFile() {
         List<Diary> diaryList = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(DIARY_DB))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(DIARY_DB))) { //버퍼링으로 읽어서 줄단위 작업이 가능
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(":");

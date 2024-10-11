@@ -33,14 +33,15 @@ public class Validator {
         }
     }
 
-    //이모지 정규식 사용하여 이모지(단일), 이모지(결합)이든 뭐든 한 글자로 인식
-    //Java의 String.length()는 문자열이 갖고 있는 유니코드 코드 단위, 즉 UTF-16 코드 유닛의 개수를 반환함 -> 2바이트(하나의 코드유닛)
-    //이모지나 복합 문자(결합된 이모지, 일부 유니코드 문자 등)는 2바이트 이상의 길이를 가짐
+    // 이모지 정규식 사용하여 이모지(단일), 이모지(결합)이든 뭐든 한 글자로 인식
+    // Java의 String.length()는 문자열이 갖고 있는 유니코드 코드 단위, 즉 UTF-16 코드 유닛의 개수를 반환함]
+    // String의 codePonitCount() : 유니코드 코드 포인트를 기준으로 길이측정함 -> 일반이모지를 한글자로 측정
+    // 하지만 결합이모지가 있음.(👨‍❤️‍👨) 이런 놈들은 여러 개의 코드포인트로 한 이모지가 구성되어 있음
     public static int getLengthOfEmojiContainableText(final String body) {
 
-        // Grapheme Cluster(한 글자로 인식하는 단위)의 정규식, 검색할 패턴을 정의함
         // Grapheme Cluster는 사용자가 하나의 문자로 인식하는 유니코드 문자의 집합.
-        // 결합된 이모지나 음성 기호가 붙은 문자는 여러 개의 코드 포인트로 이루어져 있지만, 이거를 하나로 인식하기 위함.
+        // 결합이모지나 음성 기호가 붙은 여러개의 코드 포인트로 이루어진 것들은 Grapheme Cluster를 기준으로 길이 측정을 해야지 우리가 원하는 값이 나옴
+        // Grapheme Cluster(사람이 한 글자로 인식하는 단위)의 정규식, 검색할 패턴을 정의함
        final Pattern graphemePattern = Pattern.compile("\\X");
 
         //위에서 만든 Pattern 객체를 통해 특정 문자열을 검색하여 패턴을 찾음

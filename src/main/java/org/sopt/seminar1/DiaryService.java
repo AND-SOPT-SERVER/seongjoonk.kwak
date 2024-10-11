@@ -7,11 +7,10 @@ import java.util.List;
 public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final PatchInfoRepository patchInfoRepository;
-    private final List<Diary> storage = new ArrayList<>(); // 메모리 저장소
+    private final List<Diary> storage = new ArrayList<>();
     private final PatchInfo patchData;
 
     public DiaryService() {
-
         diaryRepository = new DiaryRepository();
         patchInfoRepository = new PatchInfoRepository();
 
