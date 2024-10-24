@@ -31,8 +31,8 @@ public class DiaryController {
     }
 
     @GetMapping("/diaries")
-    ResponseEntity<List<DiaryListRes>> getDiaryList() {
-        final List<DiaryListRes> diaryList = diaryService.getDiaryList();
+    ResponseEntity<DiaryListRes> getDiaryList() {
+        final DiaryListRes diaryList = diaryService.getDiaryList();
         return ResponseEntity.status(HttpStatus.OK).body(diaryList);
     }
 

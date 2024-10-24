@@ -31,14 +31,16 @@ public class DiaryService {
     }
 
     @Transactional(readOnly = true)
-    public List<DiaryListRes> getDiaryList() {
+    public DiaryListRes getDiaryList() {
         final List<DiaryEntity> findDiaryEntityList = diaryRepository.findTop10ByOrderByIdDesc().orElseThrow(
                 () -> new NotFoundException(FailureInfo.EMPTY_DIARY)
         );
-        return findDiaryEntityList.stream()
-                .sorted(Comparator.comparing(DiaryEntity::getId)) //Id를 내려줄때, 다시 오름차순으로 정렬
-                .map(diaryEntity -> DiaryListRes.of(diaryEntity.getId(), diaryEntity.getTitle()))
+        List<DiaryListRes.DiaryIdAndTitle> DiaryIdAndTitle = findDiaryEntityList.stream()
+                .sorted(Comparator.comparing(DiaryEntity::getId)) // ID를 오름차순으로 정렬
+                .map(diaryEntity -> DiaryListRes.DiaryIdAndTitle.of(diaryEntity.getId(), diaryEntity.getTitle()))
                 .toList();
+
+        return DiaryListRes.of(DiaryIdAndTitle);
     }
 
     @Transactional(readOnly = true)
