@@ -1,17 +1,13 @@
-package org.sopt.diary.common;
+package org.sopt.diary.common.Failure;
 
 import org.springframework.http.HttpStatus;
 
-public enum FailureInfo {
+public enum DiaryFailureInfo implements FailureCode {
 
     /**
      * 400 Bad Reqeust
      */
     INVALID_CONTENT_SIZE(HttpStatus.BAD_REQUEST, "일기 내용이 30자 초과입니다."),
-    INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 요청값입니다."),
-
-
-
 
     /**
      * 404 Not Found
@@ -21,11 +17,10 @@ public enum FailureInfo {
 
     ;
 
-
     private final HttpStatus status;
     private final String message;
 
-    FailureInfo(final HttpStatus status, final String message) {
+    DiaryFailureInfo(final HttpStatus status, final String message) {
         this.status = status;
         this.message = message;
     }

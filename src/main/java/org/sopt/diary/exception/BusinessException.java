@@ -1,18 +1,18 @@
 package org.sopt.diary.exception;
 
-import org.sopt.diary.common.FailureInfo;
-import org.sopt.diary.common.FailureResponse;
+import org.sopt.diary.common.Failure.DiaryFailureInfo;
+import org.sopt.diary.common.Failure.FailureCode;
 
 public class BusinessException extends RuntimeException {
-    private FailureInfo failureInfo;
+    private FailureCode failureCode;
 
-    public BusinessException(final FailureInfo failureInfo) {
-        super(failureInfo.getMessage());
-        this.failureInfo = failureInfo;
+    public BusinessException(final FailureCode failureCode) {
+        super(failureCode.getMessage());
+        this.failureCode = failureCode;
     }
 
-    public FailureInfo getFailureInfo() {
-        return failureInfo;
+    public FailureCode getFailureCode() {
+        return failureCode;
     }
 }
 

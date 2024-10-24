@@ -4,7 +4,7 @@ import org.sopt.diary.api.dto.req.DiaryEditReq;
 import org.sopt.diary.api.dto.req.DiaryPostReq;
 import org.sopt.diary.api.dto.res.DiaryDetailInfoRes;
 import org.sopt.diary.api.dto.res.DiaryListRes;
-import org.sopt.diary.common.FailureInfo;
+import org.sopt.diary.common.Failure.DiaryFailureInfo;
 import org.sopt.diary.common.util.DateFormatUtil;
 import org.sopt.diary.exception.NotFoundException;
 import org.sopt.diary.repository.DiaryEntity;
@@ -33,8 +33,11 @@ public class DiaryService {
     @Transactional(readOnly = true)
     public DiaryListRes getDiaryList() {
         final List<DiaryEntity> findDiaryEntityList = diaryRepository.findTop10ByOrderByIdDesc().orElseThrow(
-                () -> new NotFoundException(FailureInfo.EMPTY_DIARY)
+                () -> new NotFoundException(DiaryFailureInfo.EMPTY_DIARY)
         );
+        if (findDiaryEntityList.isEmpty()) {
+            throw new NotFoundException(DiaryFailureInfo.EMPTY_DIARY);
+        }
         List<DiaryListRes.DiaryIdAndTitle> DiaryIdAndTitle = findDiaryEntityList.stream()
                 .sorted(Comparator.comparing(DiaryEntity::getId)) // ID를 오름차순으로 정렬
                 .map(diaryEntity -> DiaryListRes.DiaryIdAndTitle.of(diaryEntity.getId(), diaryEntity.getTitle()))
@@ -63,7 +66,7 @@ public class DiaryService {
 
     public DiaryEntity findDiary(final Long id) {
         return diaryRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(FailureInfo.DIARY_NOT_FOUND)
+                () -> new NotFoundException(DiaryFailureInfo.DIARY_NOT_FOUND)
         );
     }
 }

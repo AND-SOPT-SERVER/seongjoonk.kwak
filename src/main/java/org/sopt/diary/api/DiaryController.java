@@ -45,6 +45,7 @@ public class DiaryController {
     @PatchMapping("/diary/{id}")
     ResponseEntity<Void> editDiaryContent(@PathVariable final Long id,
                                           @RequestBody final DiaryEditReq diaryEditReq) {
+        ValidatorUtil.validStringLength(diaryEditReq.content(), Constants.MAX_CONTENT_LENGTH);
         diaryService.editDiaryContent(id, diaryEditReq);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
