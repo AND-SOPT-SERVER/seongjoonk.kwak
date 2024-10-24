@@ -49,4 +49,8 @@ public class DiaryService {
         final DiaryEntity findDiary = diaryRepository.findById(id).orElse(null); //추후 예외처리 할 예정
         findDiary.setContent(diaryEditReq.content()); //null 질문 답변 이후 처리
     }
+
+    public void deleteDiary(final Long id) {
+        diaryRepository.deleteById(id);
+    }
 }

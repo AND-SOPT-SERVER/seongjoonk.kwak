@@ -1,6 +1,5 @@
 package org.sopt.diary.api;
 
-import jakarta.transaction.Transactional;
 import org.sopt.diary.api.dto.req.DiaryEditReq;
 import org.sopt.diary.api.dto.req.DiaryPostReq;
 import org.sopt.diary.api.dto.res.DiaryDetailInfoRes;
@@ -47,6 +46,12 @@ public class DiaryController {
     ResponseEntity<Void> editDiaryContent(@PathVariable final Long id,
                                           @RequestBody final DiaryEditReq diaryEditReq) {
         diaryService.editDiaryContent(id, diaryEditReq);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("diary/{id}")
+    ResponseEntity<Void> deleteDiary(@PathVariable final Long id) {
+        diaryService.deleteDiary(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
