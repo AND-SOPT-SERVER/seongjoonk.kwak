@@ -1,16 +1,14 @@
 package org.sopt.diary.api;
 
 import org.sopt.diary.api.dto.req.DiaryPostReq;
+import org.sopt.diary.api.dto.res.DiaryDetailInfoRes;
 import org.sopt.diary.api.dto.res.DiaryListRes;
 import org.sopt.diary.common.Constants;
-import org.sopt.diary.common.ValidatorUtil;
+import org.sopt.diary.common.util.ValidatorUtil;
 import org.sopt.diary.service.DiaryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,5 +33,11 @@ public class DiaryController {
     ResponseEntity<List<DiaryListRes>> getDiaryList() {
         List<DiaryListRes> diaryList = diaryService.getDiaryList();
         return ResponseEntity.status(HttpStatus.OK).body(diaryList);
+    }
+
+    @GetMapping("/diaries/{id}")
+    ResponseEntity<DiaryDetailInfoRes> getDiaryDetailInfo(@PathVariable final Long id) {
+        DiaryDetailInfoRes diaryDetailInfoRes = diaryService.getDiaryDetailInfo(id);
+        return ResponseEntity.status(HttpStatus.OK).body(diaryDetailInfoRes);
     }
 }

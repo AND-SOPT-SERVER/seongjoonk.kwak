@@ -1,9 +1,10 @@
 package org.sopt.diary.repository;
 
 import jakarta.persistence.*;
+import org.sopt.diary.common.util.BaseTimeEntity;
 
 @Entity
-public class DiaryEntity {
+public class DiaryEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

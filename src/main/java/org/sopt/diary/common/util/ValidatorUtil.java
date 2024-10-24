@@ -1,4 +1,4 @@
-package org.sopt.diary.common;
+package org.sopt.diary.common.util;
 
 public final class ValidatorUtil {
     public static void validStringLength(final String text, final int length) {
