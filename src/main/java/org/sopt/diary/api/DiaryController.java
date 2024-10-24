@@ -5,7 +5,6 @@ import org.sopt.diary.api.dto.res.DiaryListRes;
 import org.sopt.diary.common.Constants;
 import org.sopt.diary.common.ValidatorUtil;
 import org.sopt.diary.service.DiaryService;
-import org.sopt.seminar1.Diary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,7 +32,8 @@ public class DiaryController {
     }
 
     @GetMapping("/diaries")
-    ResponseEntity<DiaryListRes> getDiaryList() {
-        diaryService.
+    ResponseEntity<List<DiaryListRes>> getDiaryList() {
+        List<DiaryListRes> diaryList = diaryService.getDiaryList();
+        return ResponseEntity.status(HttpStatus.OK).body(diaryList);
     }
 }

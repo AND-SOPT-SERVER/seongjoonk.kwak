@@ -6,8 +6,9 @@ import org.sopt.diary.repository.DiaryEntity;
 import org.sopt.diary.repository.DiaryRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -25,7 +26,9 @@ public class DiaryService {
 
     public List<DiaryListRes> getDiaryList() {
         List<DiaryEntity> diaryEntityList = diaryRepository.findTop10ByOrderByIdDesc();
-        diaryEntityList.stream().
+        return diaryEntityList.stream()
+                .sorted(Comparator.comparing(DiaryEntity::getId)) //Id를 내려줄때, 다시 오름차순으로 정렬
+                .map(diaryEntity -> DiaryListRes.of(diaryEntity.getId(), diaryEntity.getTitle()))
+                .toList();
     }
-
 }
