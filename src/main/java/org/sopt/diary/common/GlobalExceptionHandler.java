@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
-    protected ResponseEntity<FailureResponse> handleBusinessException(BusinessException e) {
+    protected ResponseEntity<FailureResponse> handleBusinessException(final BusinessException e) {
         return ResponseEntity.status(e.getFailureInfo().getStatus()).body(FailureResponse.of(e.getFailureInfo()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    protected ResponseEntity<FailureResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+    protected ResponseEntity<FailureResponse> handleIllegalArgumentException(final IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(FailureInfo.INVALID_INPUT));
     }
 }

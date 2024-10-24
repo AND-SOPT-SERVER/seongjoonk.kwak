@@ -6,7 +6,7 @@ import org.sopt.diary.common.FailureResponse;
 public class BusinessException extends RuntimeException {
     private FailureInfo failureInfo;
 
-    public BusinessException(FailureInfo failureInfo) {
+    public BusinessException(final FailureInfo failureInfo) {
         super(failureInfo.getMessage());
         this.failureInfo = failureInfo;
     }

@@ -25,7 +25,7 @@ public enum FailureInfo {
     private final HttpStatus status;
     private final String message;
 
-    FailureInfo(HttpStatus status, String message) {
+    FailureInfo(final HttpStatus status, final String message) {
         this.status = status;
         this.message = message;
     }
