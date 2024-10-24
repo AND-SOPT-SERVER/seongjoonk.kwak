@@ -1,5 +1,7 @@
 package org.sopt.diary.api;
 
+import jakarta.transaction.Transactional;
+import org.sopt.diary.api.dto.req.DiaryEditReq;
 import org.sopt.diary.api.dto.req.DiaryPostReq;
 import org.sopt.diary.api.dto.res.DiaryDetailInfoRes;
 import org.sopt.diary.api.dto.res.DiaryListRes;
@@ -35,9 +37,16 @@ public class DiaryController {
         return ResponseEntity.status(HttpStatus.OK).body(diaryList);
     }
 
-    @GetMapping("/diaries/{id}")
+    @GetMapping("/diary/{id}")
     ResponseEntity<DiaryDetailInfoRes> getDiaryDetailInfo(@PathVariable final Long id) {
         DiaryDetailInfoRes diaryDetailInfoRes = diaryService.getDiaryDetailInfo(id);
         return ResponseEntity.status(HttpStatus.OK).body(diaryDetailInfoRes);
+    }
+
+    @PatchMapping("/diary/{id}")
+    ResponseEntity<Void> editDiaryContent(@PathVariable final Long id,
+                                          @RequestBody final DiaryEditReq diaryEditReq) {
+        diaryService.editDiaryContent(id, diaryEditReq);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
