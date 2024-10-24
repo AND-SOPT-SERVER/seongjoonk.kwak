@@ -22,20 +22,20 @@ public class DiaryEntity extends BaseTimeEntity {
         return new DiaryEntity(title, content);
     }
 
-    public DiaryEntity(String title, String content) {
+    public DiaryEntity(final String title, final String content) {
         this.title = title;
         this.content = content;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
-    public void setContent(String content) {
+    public void setContent(final String content) {
         this.content = content;
     }
 

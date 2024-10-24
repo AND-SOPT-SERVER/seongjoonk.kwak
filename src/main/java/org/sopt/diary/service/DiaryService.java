@@ -32,7 +32,7 @@ public class DiaryService {
 
     @Transactional(readOnly = true)
     public List<DiaryListRes> getDiaryList() {
-        List<DiaryEntity> findDiaryEntityList = diaryRepository.findTop10ByOrderByIdDesc().orElseThrow(
+        final List<DiaryEntity> findDiaryEntityList = diaryRepository.findTop10ByOrderByIdDesc().orElseThrow(
                 () -> new NotFoundException(FailureInfo.EMPTY_DIARY)
         );
         return findDiaryEntityList.stream()
@@ -43,14 +43,14 @@ public class DiaryService {
 
     @Transactional(readOnly = true)
     public DiaryDetailInfoRes getDiaryDetailInfo(final Long id) {
-        DiaryEntity findDiary = findDiary(id);
+        final DiaryEntity findDiary = findDiary(id);
         final String createTimeString = DateFormatUtil.format(findDiary.getCreatedAt()); //LocalDateTime -> String
 
         return DiaryDetailInfoRes.of(findDiary.getId(), findDiary.getTitle(), findDiary.getContent(), createTimeString);
     }
 
     public void editDiaryContent(final Long id, final DiaryEditReq diaryEditReq) {
-        DiaryEntity findDiary = findDiary(id);
+        final DiaryEntity findDiary = findDiary(id);
         findDiary.setContent(diaryEditReq.content()); //null 질문 답변 이후 처리
     }
 

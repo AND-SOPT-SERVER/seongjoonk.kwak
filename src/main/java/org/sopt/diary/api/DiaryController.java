@@ -18,7 +18,7 @@ import java.util.List;
 public class DiaryController {
     private final DiaryService diaryService;
 
-    public DiaryController(DiaryService diaryService) {
+    public DiaryController(final DiaryService diaryService) {
         this.diaryService = diaryService;
     }
 
@@ -32,13 +32,13 @@ public class DiaryController {
 
     @GetMapping("/diaries")
     ResponseEntity<List<DiaryListRes>> getDiaryList() {
-        List<DiaryListRes> diaryList = diaryService.getDiaryList();
+        final List<DiaryListRes> diaryList = diaryService.getDiaryList();
         return ResponseEntity.status(HttpStatus.OK).body(diaryList);
     }
 
     @GetMapping("/diary/{id}")
     ResponseEntity<DiaryDetailInfoRes> getDiaryDetailInfo(@PathVariable final Long id) {
-        DiaryDetailInfoRes diaryDetailInfoRes = diaryService.getDiaryDetailInfo(id);
+        final DiaryDetailInfoRes diaryDetailInfoRes = diaryService.getDiaryDetailInfo(id);
         return ResponseEntity.status(HttpStatus.OK).body(diaryDetailInfoRes);
     }
 
