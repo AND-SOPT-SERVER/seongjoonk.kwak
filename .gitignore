@@ -39,6 +39,11 @@ bin/
 ### VS Code ###
 .vscode/
 
+### yml ###
+
+.yml
+*.yml
+
 ### Mac OS ###
 .DS_Store
 
