@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Component
 public interface DiaryRepository extends JpaRepository<DiaryEntity, Long> {
-    Optional<List<DiaryEntity>> findTop10ByOrderByIdDesc();
+    Optional<List<DiaryEntity>> findTop10ByOrderByCreatedAtDesc();
 }

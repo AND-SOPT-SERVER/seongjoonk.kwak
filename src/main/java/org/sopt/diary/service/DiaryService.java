@@ -32,7 +32,7 @@ public class DiaryService {
 
     @Transactional(readOnly = true)
     public DiaryListRes getDiaryList() {
-        final List<DiaryEntity> findDiaryEntityList = diaryRepository.findTop10ByOrderByIdDesc().orElseThrow(
+        final List<DiaryEntity> findDiaryEntityList = diaryRepository.findTop10ByOrderByCreatedAtDesc().orElseThrow(
                 () -> new NotFoundException(DiaryFailureInfo.EMPTY_DIARY)
         );
         if (findDiaryEntityList.isEmpty()) {
