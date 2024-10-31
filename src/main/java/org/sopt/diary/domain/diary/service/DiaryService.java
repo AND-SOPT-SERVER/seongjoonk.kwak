@@ -32,15 +32,14 @@ public class DiaryService {
         this.userRepository = userRepository;
     }
 
+    //일기 작성
     @Transactional
     public void createDiary(final Long userId,
                             final String title,
                             final String content,
                             final String category,
                             final boolean isPrivate) {
-        final User foundUser = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
-        );
+        final User foundUser = findUser(userId);
         final DiaryEntity newDiaryEntity = DiaryEntity.create(foundUser, title, content, Category.valueOf(category), isPrivate);
         diaryRepository.save(newDiaryEntity);
     }
@@ -81,9 +80,7 @@ public class DiaryService {
 
     //일기 상세 조회
     public DiaryDetailInfoRes getDiaryDetailInfo(final Long userId, final Long diaryId) {
-        final User foundUser = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
-        );
+        final User foundUser = findUser(userId);
         final DiaryEntity findDiary = findDiary(diaryId);
 
         //일기의 주인이 맞는지 검증
@@ -93,11 +90,10 @@ public class DiaryService {
         return DiaryDetailInfoRes.of(findDiary.getId(), findDiary.getTitle(), findDiary.getContent(), createTimeString, String.valueOf(findDiary.getCategory()));
     }
 
+    //일기 수정
     @Transactional
     public void editDiary(final Long userId, final Long diaryId, final DiaryEditReq diaryEditReq) {
-        final User foundUser = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
-        );
+        final User foundUser = findUser(userId);
         final DiaryEntity findDiary = findDiary(diaryId);
 
         //일기 작성자인지 검증
@@ -107,15 +103,29 @@ public class DiaryService {
         findDiary.setCategory(diaryEditReq.category());
     }
 
+    //일기 삭제
     @Transactional
-    public void deleteDiary(final Long id) {
-        findDiary(id);
-        diaryRepository.deleteById(id);
+    public void deleteDiary(final Long userId, final Long diaryId) {
+        final User foundUser = findUser(userId);
+        final DiaryEntity foundDiary = findDiary(diaryId);
+
+        //일기 작성자 검증
+        isDiaryByUser(foundUser, foundDiary);
+
+        diaryRepository.deleteById(diaryId);
     }
 
+    //일기 찾기
     public DiaryEntity findDiary(final Long diayId) {
         return diaryRepository.findById(diayId).orElseThrow(
                 () -> new NotFoundException(DiaryFailureInfo.DIARY_NOT_FOUND)
+        );
+    }
+
+    //유저 찾기
+    public User findUser(final Long uuserId) {
+        return userRepository.findById(uuserId).orElseThrow(
+                () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
         );
     }
 

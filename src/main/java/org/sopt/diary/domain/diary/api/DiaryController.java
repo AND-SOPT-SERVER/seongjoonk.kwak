@@ -55,9 +55,10 @@ public class DiaryController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("diary/{id}")
-    ResponseEntity<Void> deleteDiary(@PathVariable final Long id) {
-        diaryService.deleteDiary(id);
+    @DeleteMapping("diary/{diaryId}")
+    ResponseEntity<Void> deleteDiary(@RequestHeader("userId") final Long userId,
+                                     @PathVariable final Long diaryId) {
+        diaryService.deleteDiary(userId, diaryId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
