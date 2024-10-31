@@ -58,7 +58,7 @@ public class DiaryService {
         if (categoryEnum == Category.ALL) {
             findDiaryEntityList = switch (sortByEnum) {
                 case LATEST -> diaryRepository.findTop10ByIsPrivateFalseOrderByCreatedAtDesc(); //최신순 정렬
-                case QUANTITY -> diaryRepository.findTop10ByOrderByContentLength(); //글자수순 정렬
+                case QUANTITY -> diaryRepository.findTop10ByIsPrivateFalseOrderByContentLengthAscNative(); //글자수순 정렬
             };
         } else { //카테고리별로 조회
             findDiaryEntityList = switch (sortByEnum) {

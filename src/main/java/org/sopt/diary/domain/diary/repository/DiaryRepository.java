@@ -16,9 +16,9 @@ public interface DiaryRepository extends JpaRepository<DiaryEntity, Long> {
     // 최신순으로 10개 조회 (ALL 카테고리) - 공개된 일기만
     List<DiaryEntity> findTop10ByIsPrivateFalseOrderByCreatedAtDesc();
 
-    // 글자 수 순으로 10개 조회 (ALL 카테고리) - 공개된 일기만
-    @Query("SELECT d FROM DiaryEntity d WHERE d.isPrivate = false ORDER BY LENGTH(d.content) ASC")
-    List<DiaryEntity> findTop10ByOrderByContentLength();
+    // 글자 수 순으로 10개 조회 (ALL 카테고리) - 공개된 일기만 (네이티브 쿼리)
+    @Query(value = "SELECT * FROM diary d WHERE d.is_private = false ORDER BY LENGTH(d.content) DESC LIMIT 10", nativeQuery = true)
+    List<DiaryEntity> findTop10ByIsPrivateFalseOrderByContentLengthAscNative();
 
     // 카테고리가 있는 경우, 최신순으로 10개 조회 - 공개된 일기만
     @Query("SELECT d FROM DiaryEntity d WHERE d.category = :category AND d.isPrivate = false ORDER BY d.createdAt DESC")
