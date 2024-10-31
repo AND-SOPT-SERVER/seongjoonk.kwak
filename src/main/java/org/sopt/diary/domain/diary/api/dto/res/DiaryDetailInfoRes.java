@@ -1,4 +1,4 @@
-package org.sopt.diary.api.dto.res;
+package org.sopt.diary.domain.diary.api.dto.res;
 
 public record DiaryDetailInfoRes(
         Long id,

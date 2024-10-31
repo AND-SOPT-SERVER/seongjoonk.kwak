@@ -1,5 +1,6 @@
 package org.sopt.diary.common.util;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class) //해당 어노테이션은 엔티티의 변화를 감지하여 엔티티와 매핑된 테이블의 데이터를 조작
 public abstract class BaseTimeEntity {
     @CreatedDate
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") //형식 지정
     private LocalDateTime createdAt;
 
     public LocalDateTime getCreatedAt() {

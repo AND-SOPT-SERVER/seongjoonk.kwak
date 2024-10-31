@@ -1,38 +1,39 @@
-package org.sopt.diary.api;
+package org.sopt.diary.domain.diary.api;
 
-import org.sopt.diary.api.dto.req.DiaryEditReq;
-import org.sopt.diary.api.dto.req.DiaryPostReq;
-import org.sopt.diary.api.dto.res.DiaryDetailInfoRes;
-import org.sopt.diary.api.dto.res.DiaryListRes;
+import org.sopt.diary.domain.diary.api.dto.req.DiaryEditReq;
+import org.sopt.diary.domain.diary.api.dto.req.DiaryPostReq;
+import org.sopt.diary.domain.diary.api.dto.res.DiaryDetailInfoRes;
+import org.sopt.diary.domain.diary.api.dto.res.DiaryListRes;
 import org.sopt.diary.common.Constants;
 import org.sopt.diary.common.util.ValidatorUtil;
-import org.sopt.diary.service.DiaryService;
+import org.sopt.diary.domain.diary.service.DiaryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
 public class DiaryController {
     private final DiaryService diaryService;
 
-    public DiaryController(final DiaryService diaryService) {
+    public DiaryController(DiaryService diaryService) {
         this.diaryService = diaryService;
     }
 
     //일기 작성 API
     @PostMapping("/diary")
-    ResponseEntity<Void> postDiary(@RequestBody final DiaryPostReq diaryPostReq) {
+    ResponseEntity<Void> postDiary(@RequestHeader("userId") final Long userId,
+                                   @RequestBody final DiaryPostReq diaryPostReq) {
         ValidatorUtil.validStringLength(diaryPostReq.content(), Constants.MAX_CONTENT_LENGTH);
-        diaryService.createDiary(diaryPostReq);
+        diaryService.createDiary(userId, diaryPostReq.title(), diaryPostReq.content(), diaryPostReq.category(), diaryPostReq.isPrivate());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    //전체 일기 목록 조회 API
     @GetMapping("/diaries")
-    ResponseEntity<DiaryListRes> getDiaryList() {
-        final DiaryListRes diaryList = diaryService.getDiaryList();
+    ResponseEntity<DiaryListRes> getDiaryList(@RequestParam("category") final String category,
+                                              @RequestParam("sort") final String sort) {
+        final DiaryListRes diaryList = diaryService.getDiaryList(category, sort);
         return ResponseEntity.status(HttpStatus.OK).body(diaryList);
     }
 
