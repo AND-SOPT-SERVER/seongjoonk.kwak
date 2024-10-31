@@ -45,11 +45,13 @@ public class DiaryController {
         return ResponseEntity.status(HttpStatus.OK).body(diaryDetailInfoRes);
     }
 
-    @PatchMapping("/diary/{id}")
-    ResponseEntity<Void> editDiaryContent(@PathVariable final Long id,
-                                          @RequestBody final DiaryEditReq diaryEditReq) {
+    //일기 수정 api
+    @PatchMapping("/diary/{diaryId}")
+    ResponseEntity<Void> editDiary(@RequestHeader("userId") final Long userId,
+                                   @PathVariable final Long diaryId,
+                                   @RequestBody final DiaryEditReq diaryEditReq) {
         ValidatorUtil.validStringLength(diaryEditReq.content(), Constants.MAX_CONTENT_LENGTH);
-        diaryService.editDiary(id, diaryEditReq);
+        diaryService.editDiary(userId, diaryId, diaryEditReq);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

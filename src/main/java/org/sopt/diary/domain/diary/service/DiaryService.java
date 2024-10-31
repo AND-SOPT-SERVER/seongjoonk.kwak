@@ -60,8 +60,10 @@ public class DiaryService {
             };
         } else { //카테고리별로 조회
             findDiaryEntityList = switch (sortByEnum) {
-                case LATEST -> diaryRepository.findTop10ByCategoryAndIsPrivateFalseOrderByCreatedAtDesc(categoryEnum); //최신순 정렬
-                case QUANTITY -> diaryRepository.findTop10ByCategoryAndIsPrivateFalseOrderByContentLengthNative(categoryEnum); //글자수순 정렬
+                case LATEST ->
+                        diaryRepository.findTop10ByCategoryAndIsPrivateFalseOrderByCreatedAtDesc(categoryEnum); //최신순 정렬
+                case QUANTITY ->
+                        diaryRepository.findTop10ByCategoryAndIsPrivateFalseOrderByContentLengthNative(categoryEnum); //글자수순 정렬
             };
         }
 
@@ -82,22 +84,27 @@ public class DiaryService {
         final User foundUser = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
         );
-
         final DiaryEntity findDiary = findDiary(diaryId);
 
         //일기의 주인이 맞는지 검증
-        if (!findDiary.getUser().equals(foundUser)) {
-            throw new NotFoundException(DiaryFailureInfo.UNAUTHORIZED_EXCEPTION);
-        }
+        isDiaryByUser(foundUser, findDiary);
 
         final String createTimeString = DateFormatUtil.format(findDiary.getCreatedAt()); //LocalDateTime -> String
         return DiaryDetailInfoRes.of(findDiary.getId(), findDiary.getTitle(), findDiary.getContent(), createTimeString, String.valueOf(findDiary.getCategory()));
     }
 
     @Transactional
-    public void editDiary(final Long id, final DiaryEditReq diaryEditReq) {
-        final DiaryEntity findDiary = findDiary(id);
-        findDiary.setContent(diaryEditReq.content()); //null 질문 답변 이후 처리
+    public void editDiary(final Long userId, final Long diaryId, final DiaryEditReq diaryEditReq) {
+        final User foundUser = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
+        );
+        final DiaryEntity findDiary = findDiary(diaryId);
+
+        //일기 작성자인지 검증
+        isDiaryByUser(foundUser, findDiary);
+
+        findDiary.setContent(diaryEditReq.content());
+        findDiary.setCategory(diaryEditReq.category());
     }
 
     @Transactional
@@ -110,5 +117,12 @@ public class DiaryService {
         return diaryRepository.findById(diayId).orElseThrow(
                 () -> new NotFoundException(DiaryFailureInfo.DIARY_NOT_FOUND)
         );
+    }
+
+    //일기의 주인이 맞는지 검증
+    private void isDiaryByUser(final User user, final DiaryEntity diary) {
+        if (!diary.getUser().equals(user)) {
+            throw new NotFoundException(DiaryFailureInfo.UNAUTHORIZED_EXCEPTION);
+        }
     }
 }
