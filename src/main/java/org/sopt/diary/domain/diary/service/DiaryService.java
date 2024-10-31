@@ -5,7 +5,6 @@ import org.sopt.diary.common.Failure.UserFailureInfo;
 import org.sopt.diary.common.SortBy;
 import org.sopt.diary.common.util.ValidatorUtil;
 import org.sopt.diary.domain.diary.api.dto.req.DiaryEditReq;
-import org.sopt.diary.domain.diary.api.dto.req.DiaryPostReq;
 import org.sopt.diary.domain.diary.api.dto.res.DiaryDetailInfoRes;
 import org.sopt.diary.domain.diary.api.dto.res.DiaryListRes;
 import org.sopt.diary.common.Failure.DiaryFailureInfo;
@@ -16,14 +15,13 @@ import org.sopt.diary.exception.NotFoundException;
 import org.sopt.diary.domain.diary.entity.DiaryEntity;
 import org.sopt.diary.domain.diary.repository.DiaryRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 
-@Component
+@Service
 @Transactional(readOnly = true)
 public class DiaryService {
     private final DiaryRepository diaryRepository;
@@ -63,7 +61,7 @@ public class DiaryService {
         } else { //카테고리별로 조회
             findDiaryEntityList = switch (sortByEnum) {
                 case LATEST -> diaryRepository.findTop10ByCategoryAndIsPrivateFalseOrderByCreatedAtDesc(categoryEnum); //최신순 정렬
-                case QUANTITY -> diaryRepository.findTop10ByCategoryAndIsPrivateFalseOrderByContentLength(categoryEnum); //글자수순 정렬
+                case QUANTITY -> diaryRepository.findTop10ByCategoryAndIsPrivateFalseOrderByContentLengthNative(categoryEnum); //글자수순 정렬
             };
         }
 
@@ -79,15 +77,25 @@ public class DiaryService {
         return DiaryListRes.of(diaryIdAndTitleList);
     }
 
-    public DiaryDetailInfoRes getDiaryDetailInfo(final Long id) {
-        final DiaryEntity findDiary = findDiary(id);
-        final String createTimeString = DateFormatUtil.format(findDiary.getCreatedAt()); //LocalDateTime -> String
+    //일기 상세 조회
+    public DiaryDetailInfoRes getDiaryDetailInfo(final Long userId, final Long diaryId) {
+        final User foundUser = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
+        );
 
-        return DiaryDetailInfoRes.of(findDiary.getId(), findDiary.getTitle(), findDiary.getContent(), createTimeString);
+        final DiaryEntity findDiary = findDiary(diaryId);
+
+        //일기의 주인이 맞는지 검증
+        if (!findDiary.getUser().equals(foundUser)) {
+            throw new NotFoundException(DiaryFailureInfo.UNAUTHORIZED_EXCEPTION);
+        }
+
+        final String createTimeString = DateFormatUtil.format(findDiary.getCreatedAt()); //LocalDateTime -> String
+        return DiaryDetailInfoRes.of(findDiary.getId(), findDiary.getTitle(), findDiary.getContent(), createTimeString, String.valueOf(findDiary.getCategory()));
     }
 
     @Transactional
-    public void editDiaryContent(final Long id, final DiaryEditReq diaryEditReq) {
+    public void editDiary(final Long id, final DiaryEditReq diaryEditReq) {
         final DiaryEntity findDiary = findDiary(id);
         findDiary.setContent(diaryEditReq.content()); //null 질문 답변 이후 처리
     }
@@ -98,8 +106,8 @@ public class DiaryService {
         diaryRepository.deleteById(id);
     }
 
-    public DiaryEntity findDiary(final Long id) {
-        return diaryRepository.findById(id).orElseThrow(
+    public DiaryEntity findDiary(final Long diayId) {
+        return diaryRepository.findById(diayId).orElseThrow(
                 () -> new NotFoundException(DiaryFailureInfo.DIARY_NOT_FOUND)
         );
     }

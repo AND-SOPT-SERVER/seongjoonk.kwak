@@ -1,15 +1,11 @@
 package org.sopt.diary.domain.diary.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.sopt.diary.domain.users.entity.User;
 import org.sopt.diary.common.Category;
 import org.sopt.diary.common.util.BaseTimeEntity;
 
-import java.time.LocalDateTime;
-
 @Entity
-
 @Table(name = "diary")
 public class DiaryEntity extends BaseTimeEntity {
 
@@ -49,6 +45,15 @@ public class DiaryEntity extends BaseTimeEntity {
         this.title = title;
         this.content = content;
         this.isPrivate = isPrivate;
+        this.category = category;
+    }
+
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
         this.category = category;
     }
 

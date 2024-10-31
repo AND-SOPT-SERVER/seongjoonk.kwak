@@ -37,9 +37,11 @@ public class DiaryController {
         return ResponseEntity.status(HttpStatus.OK).body(diaryList);
     }
 
-    @GetMapping("/diary/{id}")
-    ResponseEntity<DiaryDetailInfoRes> getDiaryDetailInfo(@PathVariable final Long id) {
-        final DiaryDetailInfoRes diaryDetailInfoRes = diaryService.getDiaryDetailInfo(id);
+    //일기 상세 조회 API
+    @GetMapping("/diary/{diaryId}")
+    ResponseEntity<DiaryDetailInfoRes> getDiaryDetailInfo(@RequestHeader("userId") final Long userId,
+                                                          @PathVariable final Long diaryId) {
+        final DiaryDetailInfoRes diaryDetailInfoRes = diaryService.getDiaryDetailInfo(userId, diaryId);
         return ResponseEntity.status(HttpStatus.OK).body(diaryDetailInfoRes);
     }
 
@@ -47,7 +49,7 @@ public class DiaryController {
     ResponseEntity<Void> editDiaryContent(@PathVariable final Long id,
                                           @RequestBody final DiaryEditReq diaryEditReq) {
         ValidatorUtil.validStringLength(diaryEditReq.content(), Constants.MAX_CONTENT_LENGTH);
-        diaryService.editDiaryContent(id, diaryEditReq);
+        diaryService.editDiary(id, diaryEditReq);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

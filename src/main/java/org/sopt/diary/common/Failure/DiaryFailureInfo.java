@@ -15,6 +15,8 @@ public enum DiaryFailureInfo implements FailureCode {
     DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다."),
     EMPTY_DIARY(HttpStatus.NOT_FOUND, "현재 작성된 일기가 없습니다."),
 
+    UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다"),
+
     ;
 
     private final HttpStatus status;
