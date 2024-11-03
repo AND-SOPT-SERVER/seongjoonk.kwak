@@ -9,12 +9,12 @@ import org.sopt.diary.domain.diary.api.dto.res.DiaryDetailInfoRes;
 import org.sopt.diary.domain.diary.api.dto.res.DiaryListRes;
 import org.sopt.diary.common.Failure.DiaryFailureInfo;
 import org.sopt.diary.common.util.DateFormatUtil;
+import org.sopt.diary.domain.diary.api.dto.res.DiaryMyListRes;
 import org.sopt.diary.domain.users.entity.User;
 import org.sopt.diary.domain.users.repository.UserRepository;
 import org.sopt.diary.exception.NotFoundException;
 import org.sopt.diary.domain.diary.entity.DiaryEntity;
 import org.sopt.diary.domain.diary.repository.DiaryRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,11 +72,48 @@ public class DiaryService {
         }
 
         // DiaryListRes 응답 생성
-        List<DiaryListRes.DiaryIdAndTitle> diaryIdAndTitleList = findDiaryEntityList.stream()
-                .map(diaryEntity -> DiaryListRes.DiaryIdAndTitle.of(diaryEntity.getId(), diaryEntity.getUser().getNickname(), diaryEntity.getTitle(), diaryEntity.getCreatedAt()))
+        List<DiaryListRes.DiaryInfo> diaryInfoList = findDiaryEntityList.stream()
+                .map(diaryEntity -> DiaryListRes.DiaryInfo.of(diaryEntity.getId(), diaryEntity.getUser().getNickname(), diaryEntity.getTitle(), diaryEntity.getCreatedAt()))
                 .toList();
-        return DiaryListRes.of(diaryIdAndTitleList);
+        return DiaryListRes.of(diaryInfoList);
     }
+
+    //내 일기 목록 조회
+    public DiaryMyListRes getMyDiaryList(final Long userId,
+                                         final String category,
+                                         final String sortBy) {
+        final User foundUser = findUser(userId);
+        final Category categoryEnum = Category.valueOf(category.toUpperCase());
+        final SortBy sortByEnum = SortBy.valueOf(sortBy.toUpperCase());
+
+        final List<DiaryEntity> findDiaryEntityList;
+
+        if (categoryEnum == Category.ALL) {
+            // 카테고리가 ALL일 때
+            findDiaryEntityList = switch (sortByEnum) {
+                case LATEST -> diaryRepository.findTop10ByUserOrderByCreatedAtDesc(foundUser);
+                case QUANTITY -> diaryRepository.findTop10ByUserOrderByContentLengthAscNative(userId);
+            };
+        } else {
+            // 특정 카테고리일 때
+            findDiaryEntityList = switch (sortByEnum) {
+                case LATEST -> diaryRepository.findTop10ByUserAndCategoryOrderByCreatedAtDesc(foundUser, categoryEnum);
+                case QUANTITY -> diaryRepository.findTop10ByUserAndCategoryOrderByContentLengthNative(userId, categoryEnum);
+            };
+        }
+
+        // 빈 리스트 검증
+        if (ValidatorUtil.isListEmpty(findDiaryEntityList)) {
+            throw new NotFoundException(DiaryFailureInfo.DIARY_NOT_FOUND);
+        }
+
+        // DiaryMyListRes 응답 생성
+        List<DiaryMyListRes.DiaryMyInfo> diaryInfoList = findDiaryEntityList.stream()
+                .map(diaryEntity -> DiaryMyListRes.DiaryMyInfo.of(diaryEntity.getId(), diaryEntity.getTitle(), diaryEntity.getCreatedAt()))
+                .toList();
+        return DiaryMyListRes.of(diaryInfoList);
+    }
+
 
     //일기 상세 조회
     public DiaryDetailInfoRes getDiaryDetailInfo(final Long userId, final Long diaryId) {

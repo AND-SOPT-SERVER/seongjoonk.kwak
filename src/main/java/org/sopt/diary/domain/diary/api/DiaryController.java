@@ -6,6 +6,7 @@ import org.sopt.diary.domain.diary.api.dto.res.DiaryDetailInfoRes;
 import org.sopt.diary.domain.diary.api.dto.res.DiaryListRes;
 import org.sopt.diary.common.Constants;
 import org.sopt.diary.common.util.ValidatorUtil;
+import org.sopt.diary.domain.diary.api.dto.res.DiaryMyListRes;
 import org.sopt.diary.domain.diary.service.DiaryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,15 @@ public class DiaryController {
                                               @RequestParam("sort") final String sort) {
         final DiaryListRes diaryList = diaryService.getDiaryList(category, sort);
         return ResponseEntity.status(HttpStatus.OK).body(diaryList);
+    }
+
+    //개인 일기 목록 조회 API
+    @GetMapping("/diaries/my")
+    ResponseEntity<DiaryMyListRes> getMyDiaryList(@RequestHeader("userId") final Long userId,
+                                                  @RequestParam("category") final String category,
+                                                  @RequestParam("sort") final String sort) {
+        final DiaryMyListRes diaryMyListRes = diaryService.getMyDiaryList(userId, category, sort);
+        return ResponseEntity.status(HttpStatus.OK).body(diaryMyListRes);
     }
 
     //일기 상세 조회 API

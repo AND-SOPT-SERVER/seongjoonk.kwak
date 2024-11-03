@@ -4,23 +4,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record DiaryListRes(
-        List<DiaryIdAndTitle> diaryList
+        List<DiaryInfo> diaryList
 ) {
-    public static DiaryListRes of(final List<DiaryIdAndTitle> diaryIdAndTitle) {
-        return new DiaryListRes(diaryIdAndTitle);
+    public static DiaryListRes of(final List<DiaryInfo> diaryInfo) {
+        return new DiaryListRes(diaryInfo);
     }
 
-    public record DiaryIdAndTitle(
+    public record DiaryInfo(
             Long id,
             String username,
             String title,
             LocalDateTime createAt
     ) {
-        public static DiaryIdAndTitle of(final Long id,
-                                         final String username,
-                                         final String title,
-                                         final LocalDateTime createAt) {
-            return new DiaryIdAndTitle(id, username, title, createAt);
+        public static DiaryInfo of(final Long id,
+                                   final String username,
+                                   final String title,
+                                   final LocalDateTime createAt) {
+            return new DiaryInfo(id, username, title, createAt);
         }
     }
 }

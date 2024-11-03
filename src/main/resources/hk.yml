@@ -1,0 +1,63 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://lucky-database.cfoe64oy0bul.ap-northeast-2.rds.amazonaws.com:5432/luckyton
+    username: luckyyoungnam
+    password: luckyton123!
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info # 헬스 체크와 정보 노출 설정
+  endpoint:
+    health:
+      show-details: always # 헬스 체크 결과 상세 표시
+
+jwt:
+  secret: jwtjwtjwtjwtjwtjwtjwtjwtjwtjwtjwtjwtjwtjwtjwtjwtjwtjwtj
+  accessTokenExpireTime: 2419100000 # 1분 밀리초
+  refreshTokenExpireTime: 2419100000 # 4주 밀리초
+
+feign:
+  kakao:
+    name: kakao-feign-api
+    get-token-url: https://kauth.kakao.com
+    get-token-info-url: https://kapi.kakao.com
+    redirect: https://inuluckyyoungnam.vercel.app/redirect
+    rest-api-key: c1d7ca4326ef9e244ee5368fe08ec937
+
+gpt:
+  model: gpt-3.5-turbo
+  api:
+    key: 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
+    url: https://api.openai.com/v1/chat/completions
+
+cloud:
+  aws:
+    s3:
+      bucket: youngnam
+      preImgFolder: pre-images/
+      finalImgFolder: final-images/
+    credentials:
+      access-key: AKIA3C6FLXE57Z2UF6HO
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
