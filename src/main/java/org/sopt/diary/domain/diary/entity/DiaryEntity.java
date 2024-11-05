@@ -2,7 +2,7 @@ package org.sopt.diary.domain.diary.entity;
 
 import jakarta.persistence.*;
 import org.sopt.diary.domain.users.entity.User;
-import org.sopt.diary.common.Category;
+import org.sopt.diary.common.enums.Category;
 import org.sopt.diary.common.util.BaseTimeEntity;
 
 @Entity

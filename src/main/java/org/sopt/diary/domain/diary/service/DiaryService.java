@@ -1,8 +1,8 @@
 package org.sopt.diary.domain.diary.service;
 
-import org.sopt.diary.common.Category;
+import org.sopt.diary.common.enums.Category;
 import org.sopt.diary.common.Failure.UserFailureInfo;
-import org.sopt.diary.common.SortBy;
+import org.sopt.diary.common.enums.SortBy;
 import org.sopt.diary.common.util.ValidatorUtil;
 import org.sopt.diary.domain.diary.api.dto.req.DiaryEditReq;
 import org.sopt.diary.domain.diary.api.dto.res.DiaryDetailInfoRes;
@@ -12,7 +12,7 @@ import org.sopt.diary.common.util.DateFormatUtil;
 import org.sopt.diary.domain.diary.api.dto.res.DiaryMyListRes;
 import org.sopt.diary.domain.users.entity.User;
 import org.sopt.diary.domain.users.repository.UserRepository;
-import org.sopt.diary.exception.NotFoundException;
+import org.sopt.diary.exception.BusinessException;
 import org.sopt.diary.domain.diary.entity.DiaryEntity;
 import org.sopt.diary.domain.diary.repository.DiaryRepository;
 import org.springframework.stereotype.Service;
@@ -68,7 +68,7 @@ public class DiaryService {
 
         //빈 List 검증
         if (ValidatorUtil.isListEmpty(findDiaryEntityList)) {
-            throw new NotFoundException(DiaryFailureInfo.DIARY_NOT_FOUND);
+            throw new BusinessException(DiaryFailureInfo.DIARY_NOT_FOUND);
         }
 
         // DiaryListRes 응답 생성
@@ -104,7 +104,7 @@ public class DiaryService {
 
         // 빈 리스트 검증
         if (ValidatorUtil.isListEmpty(findDiaryEntityList)) {
-            throw new NotFoundException(DiaryFailureInfo.DIARY_NOT_FOUND);
+            throw new BusinessException(DiaryFailureInfo.DIARY_NOT_FOUND);
         }
 
         // DiaryMyListRes 응답 생성
@@ -155,21 +155,21 @@ public class DiaryService {
     //일기 찾기
     public DiaryEntity findDiary(final Long diayId) {
         return diaryRepository.findById(diayId).orElseThrow(
-                () -> new NotFoundException(DiaryFailureInfo.DIARY_NOT_FOUND)
+                () -> new BusinessException(DiaryFailureInfo.DIARY_NOT_FOUND)
         );
     }
 
     //유저 찾기
     public User findUser(final Long uuserId) {
         return userRepository.findById(uuserId).orElseThrow(
-                () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
+                () -> new BusinessException(UserFailureInfo.USER_NOT_FOUND)
         );
     }
 
     //일기의 주인이 맞는지 검증
     private void isDiaryByUser(final User user, final DiaryEntity diary) {
         if (!diary.getUser().equals(user)) {
-            throw new NotFoundException(DiaryFailureInfo.UNAUTHORIZED_EXCEPTION);
+            throw new BusinessException(DiaryFailureInfo.UNAUTHORIZED_EXCEPTION);
         }
     }
 }

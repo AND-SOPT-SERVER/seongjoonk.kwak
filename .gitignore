@@ -18,6 +18,7 @@ application.yml
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+src/main/resources/logback.xml
 
 ### Eclipse ###
 .apt_generated

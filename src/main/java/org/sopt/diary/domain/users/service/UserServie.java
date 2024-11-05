@@ -8,8 +8,7 @@ import org.sopt.diary.common.Failure.UserFailureInfo;
 import org.sopt.diary.domain.users.api.dto.UserSignInRes;
 import org.sopt.diary.domain.users.entity.User;
 import org.sopt.diary.domain.users.repository.UserRepository;
-import org.sopt.diary.exception.BadRequestException;
-import org.sopt.diary.exception.NotFoundException;
+import org.sopt.diary.exception.BusinessException;
 import org.springframework.stereotype.Service;
 
 
@@ -32,13 +31,13 @@ public class UserServie {
     public UserSignInRes signin(final String loginId, final String password) {
         // loginId로 유저찾기
         final User foundUser = userRepository.findByLoginId(loginId).orElseThrow(
-                () -> new NotFoundException(UserFailureInfo.USER_NOT_FOUND)
+                () -> new BusinessException(UserFailureInfo.USER_NOT_FOUND)
         );
         // 찾은 유저 비밀번호와 받은 비밀번호 비교
         if(foundUser.getPassword().equals(password)) {
            return UserSignInRes.of(foundUser.getId());
         } else {
-            throw new BadRequestException(UserFailureInfo.INVALID_USER_PASSWROD);
+            throw new BusinessException(UserFailureInfo.INVALID_USER_PASSWROD);
         }
     }
 }

@@ -1,5 +1,12 @@
 package org.sopt.diary.domain.diary.api;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.sopt.diary.common.enums.Category;
+import org.sopt.diary.common.enums.SortBy;
+import org.sopt.diary.common.enums.validation.EnumValue;
 import org.sopt.diary.domain.diary.api.dto.req.DiaryEditReq;
 import org.sopt.diary.domain.diary.api.dto.req.DiaryPostReq;
 import org.sopt.diary.domain.diary.api.dto.res.DiaryDetailInfoRes;
@@ -23,8 +30,8 @@ public class DiaryController {
 
     //일기 작성 API
     @PostMapping("/diary")
-    ResponseEntity<Void> postDiary(@RequestHeader("userId") final Long userId,
-                                   @RequestBody final DiaryPostReq diaryPostReq) {
+    ResponseEntity<Void> postDiary(@NotNull @Min(1) @RequestHeader("userId") final Long userId,
+                                   @Valid @RequestBody final DiaryPostReq diaryPostReq) {
         ValidatorUtil.validStringLength(diaryPostReq.content(), Constants.MAX_CONTENT_LENGTH);
         diaryService.createDiary(userId, diaryPostReq.title(), diaryPostReq.content(), diaryPostReq.category(), diaryPostReq.isPrivate());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -32,8 +39,13 @@ public class DiaryController {
 
     //전체 일기 목록 조회 API
     @GetMapping("/diaries")
-    ResponseEntity<DiaryListRes> getDiaryList(@RequestParam("category") final String category,
-                                              @RequestParam("sort") final String sort) {
+    ResponseEntity<DiaryListRes> getDiaryList(
+            @EnumValue(enumClass = Category.class, message = "유효하지 않은 카테고리입니다", ignoreCase = false)
+            @RequestParam("category")
+            final String category,
+            @EnumValue(enumClass = SortBy.class, message = "유효하지 않은 카테고리입니다", ignoreCase = false)
+            @RequestParam("sort")
+            final String sort) {
         final DiaryListRes diaryList = diaryService.getDiaryList(category, sort);
         return ResponseEntity.status(HttpStatus.OK).body(diaryList);
     }

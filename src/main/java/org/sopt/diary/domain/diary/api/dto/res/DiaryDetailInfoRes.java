@@ -1,7 +1,5 @@
 package org.sopt.diary.domain.diary.api.dto.res;
 
-import org.sopt.diary.common.Category;
-
 public record DiaryDetailInfoRes(
         Long id,
         String title,

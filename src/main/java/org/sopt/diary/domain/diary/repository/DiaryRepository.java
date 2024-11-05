@@ -1,6 +1,6 @@
 package org.sopt.diary.domain.diary.repository;
 
-import org.sopt.diary.common.Category;
+import org.sopt.diary.common.enums.Category;
 import org.sopt.diary.domain.diary.entity.DiaryEntity;
 import org.sopt.diary.domain.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public interface DiaryRepository extends JpaRepository<DiaryEntity, Long> {

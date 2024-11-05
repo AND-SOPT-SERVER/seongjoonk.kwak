@@ -8,6 +8,10 @@ public enum CommonFailureInfo implements FailureCode{
      * 400 Bad Reqeust
      */
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 요청값입니다."),
+    MISSING_REQUEST_HEADER(HttpStatus.BAD_REQUEST, "필요한 헤더값이 없습니다."),
+    INVALID_HEADER_TYPE(HttpStatus.BAD_REQUEST, "의 타입이 잘못되었습니다."),
+    MISSING_REQUEST_PARAM(HttpStatus.BAD_REQUEST, "파라미터값이 없습니다."),
+
     ;
 
     private final HttpStatus status;
