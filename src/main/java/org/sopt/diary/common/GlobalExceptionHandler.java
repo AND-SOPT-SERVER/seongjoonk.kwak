@@ -11,12 +11,14 @@ import org.sopt.diary.common.Failure.FailureResponse;
 import org.sopt.diary.common.enums.validation.ValidationError;
 import org.sopt.diary.exception.BusinessException;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.Objects;
@@ -84,12 +87,29 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(CommonFailureInfo.INVALID_INPUT));
     }
 
+    //request param 없을 때
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ResponseEntity<FailureResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(CommonFailureInfo.MISSING_REQUEST_PARAM));
     }
 
+    //httpmethod 잘못 넣거나, 요청값 잘못넣었을떄
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    protected ResponseEntity<FailureResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(CommonFailureInfo.INVALID_INPUT));
+    }
 
+    //존재하지 않는 엔드포인트로 접근할때
+    @ExceptionHandler(NoResourceFoundException.class)
+    protected ResponseEntity<FailureResponse> handleNoResourceFoundException(NoResourceFoundException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(CommonFailureInfo.INVALID_END_POINT));
+    }
+
+    //유니크 키 충돌
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<FailureResponse> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(CommonFailureInfo.ALREADY_EXITST_TITLE));
+    }
 
 
 }

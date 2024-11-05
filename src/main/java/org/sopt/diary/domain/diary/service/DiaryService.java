@@ -34,7 +34,7 @@ public class DiaryService {
 
     //일기 작성
     @Transactional
-    public void createDiary(final Long userId,
+    public void createDiary(final long userId,
                             final String title,
                             final String content,
                             final String category,
@@ -79,7 +79,7 @@ public class DiaryService {
     }
 
     //내 일기 목록 조회
-    public DiaryMyListRes getMyDiaryList(final Long userId,
+    public DiaryMyListRes getMyDiaryList(final long userId,
                                          final String category,
                                          final String sortBy) {
         final User foundUser = findUser(userId);
@@ -116,7 +116,7 @@ public class DiaryService {
 
 
     //일기 상세 조회
-    public DiaryDetailInfoRes getDiaryDetailInfo(final Long userId, final Long diaryId) {
+    public DiaryDetailInfoRes getDiaryDetailInfo(final long userId, final Long diaryId) {
         final User foundUser = findUser(userId);
         final DiaryEntity findDiary = findDiary(diaryId);
 
@@ -129,7 +129,7 @@ public class DiaryService {
 
     //일기 수정
     @Transactional
-    public void editDiary(final Long userId, final Long diaryId, final DiaryEditReq diaryEditReq) {
+    public void editDiary(final long userId, final Long diaryId, final DiaryEditReq diaryEditReq) {
         final User foundUser = findUser(userId);
         final DiaryEntity findDiary = findDiary(diaryId);
 
@@ -142,7 +142,7 @@ public class DiaryService {
 
     //일기 삭제
     @Transactional
-    public void deleteDiary(final Long userId, final Long diaryId) {
+    public void deleteDiary(final long userId, final Long diaryId) {
         final User foundUser = findUser(userId);
         final DiaryEntity foundDiary = findDiary(diaryId);
 
@@ -153,7 +153,7 @@ public class DiaryService {
     }
 
     //일기 찾기
-    public DiaryEntity findDiary(final Long diayId) {
+    public DiaryEntity findDiary(final long diayId) {
         return diaryRepository.findById(diayId).orElseThrow(
                 () -> new BusinessException(DiaryFailureInfo.DIARY_NOT_FOUND)
         );

@@ -30,7 +30,7 @@ public class DiaryController {
 
     //일기 작성 API
     @PostMapping("/diary")
-    ResponseEntity<Void> postDiary(@NotNull @Min(1) @RequestHeader("userId") final Long userId,
+    ResponseEntity<Void> postDiary(@NotNull @Min(1) @RequestHeader("userId") final long userId,
                                    @Valid @RequestBody final DiaryPostReq diaryPostReq) {
         ValidatorUtil.validStringLength(diaryPostReq.content(), Constants.MAX_CONTENT_LENGTH);
         diaryService.createDiary(userId, diaryPostReq.title(), diaryPostReq.content(), diaryPostReq.category(), diaryPostReq.isPrivate());
@@ -52,34 +52,41 @@ public class DiaryController {
 
     //개인 일기 목록 조회 API
     @GetMapping("/diaries/my")
-    ResponseEntity<DiaryMyListRes> getMyDiaryList(@RequestHeader("userId") final Long userId,
-                                                  @RequestParam("category") final String category,
-                                                  @RequestParam("sort") final String sort) {
+    ResponseEntity<DiaryMyListRes> getMyDiaryList(
+            @NotNull
+            @Min(1)
+            @RequestHeader("userId")
+            final long userId,
+            @EnumValue(enumClass = Category.class, message = "유효하지 않은 카테고리입니다", ignoreCase = false)
+            @RequestParam("category")
+            final String category,
+            @EnumValue(enumClass = SortBy.class, message = "유효하지 않은 카테고리입니다", ignoreCase = false)
+            @RequestParam("sort") final String sort) {
         final DiaryMyListRes diaryMyListRes = diaryService.getMyDiaryList(userId, category, sort);
         return ResponseEntity.status(HttpStatus.OK).body(diaryMyListRes);
     }
 
     //일기 상세 조회 API
     @GetMapping("/diary/{diaryId}")
-    ResponseEntity<DiaryDetailInfoRes> getDiaryDetailInfo(@RequestHeader("userId") final Long userId,
-                                                          @PathVariable final Long diaryId) {
+    ResponseEntity<DiaryDetailInfoRes> getDiaryDetailInfo(@NotNull @Min(1) @RequestHeader("userId") final long userId,
+                                                          @NotBlank @PathVariable final Long diaryId) {
         final DiaryDetailInfoRes diaryDetailInfoRes = diaryService.getDiaryDetailInfo(userId, diaryId);
         return ResponseEntity.status(HttpStatus.OK).body(diaryDetailInfoRes);
     }
 
     //일기 수정 api
     @PatchMapping("/diary/{diaryId}")
-    ResponseEntity<Void> editDiary(@RequestHeader("userId") final Long userId,
-                                   @PathVariable final Long diaryId,
-                                   @RequestBody final DiaryEditReq diaryEditReq) {
+    ResponseEntity<Void> editDiary(@NotNull @Min(1) @RequestHeader("userId") final long userId,
+                                   @NotBlank @PathVariable final Long diaryId,
+                                   @Valid @RequestBody final DiaryEditReq diaryEditReq) {
         ValidatorUtil.validStringLength(diaryEditReq.content(), Constants.MAX_CONTENT_LENGTH);
         diaryService.editDiary(userId, diaryId, diaryEditReq);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("diary/{diaryId}")
-    ResponseEntity<Void> deleteDiary(@RequestHeader("userId") final Long userId,
-                                     @PathVariable final Long diaryId) {
+    ResponseEntity<Void> deleteDiary(@NotNull @Min(1) @RequestHeader("userId") final long userId,
+                                     @NotBlank @PathVariable final Long diaryId) {
         diaryService.deleteDiary(userId, diaryId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
