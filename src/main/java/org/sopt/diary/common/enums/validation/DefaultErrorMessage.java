@@ -1,13 +1,11 @@
 package org.sopt.diary.common.enums.validation;
 
-import org.springframework.context.MessageSourceResolvable;
-import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.stream.Collectors;
 
-public class Test {
+public class DefaultErrorMessage {
 
     //@Size, @Notblank
     //메세지들도 가져옴

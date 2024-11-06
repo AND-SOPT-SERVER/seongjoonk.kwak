@@ -2,22 +2,14 @@ package org.sopt.diary.common;
 
 import jakarta.validation.UnexpectedTypeException;
 import jakarta.validation.ValidationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sopt.diary.common.Failure.CommonFailureInfo;
-import org.sopt.diary.common.Failure.DiaryFailureInfo;
-import org.sopt.diary.common.Failure.FailureCode;
 import org.sopt.diary.common.Failure.FailureResponse;
 import org.sopt.diary.common.enums.validation.ValidationError;
 import org.sopt.diary.exception.BusinessException;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -29,12 +21,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
-import java.util.Objects;
 
-import static org.sopt.diary.common.enums.validation.Test.getDefaultFromHandlerMethodValidationException;
+import static org.sopt.diary.common.enums.validation.DefaultErrorMessage.getDefaultFromHandlerMethodValidationException;
 
 //<컨트롤러 가기전 예외, 컨트롤러에서의 예외, 그 후의 예외들> 이렇게 모아둘까..? 예외메세지 줄 떄 어느정도까지 줘야되는지도 궁금함
-//boolean은 어떻게 검증함? 숫자 이상한거 넣어도 잘들어감...
+//boolean은 어떻게 검증함? boolean 필드에 아무값이나 null넣거나 숫자 이상한거 넣어도 boolean이 알아서 들어감...
 //String값이 아닌거 넣어도 String으로 알아서 들어가는거같음(포맨이라그런가)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -81,9 +72,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(HttpStatus.BAD_REQUEST, defaultErrorMessage));
     }
 
-    //현재 enum필드에 아예 필드자체도 안들어갔을때 이 예외가 떠서 일단 이거로 해둠
+    @ExceptionHandler(UnexpectedTypeException.class)
+    protected ResponseEntity<FailureResponse> handleUnexpectedTypeException(UnexpectedTypeException e) {
+//        System.out.println(e.);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(CommonFailureInfo.MISSING_REQUEST_PARAM));
+    }
+
+
+
+//    현재 enum필드에 아예 필드자체도 안들어갔을때 이 예외가 떠서 일단 이거로 해둠
     @ExceptionHandler(ValidationException.class)
     protected ResponseEntity<FailureResponse> handleValidationException(ValidationException e) {
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(FailureResponse.of(CommonFailureInfo.INVALID_INPUT));
     }
 
